@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Minimal Light-Green Shopping Logo (No Text)</title>
+  <g stroke="#78C9A5" stroke-width="48" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bag body -->
+    <rect x="256" y="320" width="512" height="544" rx="64" fill="none"/>
+    <!-- Handle -->
+    <path d="M352 448c0-88 72-160 160-160s160 72 160 160" fill="none"/>
+    <!-- Rivets -->
+    <circle cx="352" cy="448" r="24" fill="#78C9A5"/>
+    <circle cx="672" cy="448" r="24" fill="#78C9A5"/>
+  </g>
+</svg>

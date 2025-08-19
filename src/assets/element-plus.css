@@ -1,0 +1,20 @@
+:root {
+  /* 全站通用 */
+  --el-bg-color: var(--color-background);
+  --el-text-color-primary: var(--color-text);
+  --el-text-color-regular: var(--color-text);
+}
+
+/* （可選）以 html.dark 覆蓋你的自有 tokens，讓 class 切換也能生效
+   如果你保留了 @media (prefers-color-scheme: dark) 區塊，也可以不寫這段 */
+html.dark {
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
+
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
+
+  --color-heading: var(--vt-c-text-dark-1);
+  --color-text: var(--vt-c-text-dark-2);
+}
