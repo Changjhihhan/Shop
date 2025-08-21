@@ -1,9 +1,12 @@
-export interface productItem {
-  name: string,
+export interface productType {
   id: string,
-  content: string,
+  name: string,
   price: number,
-  isNew?: boolean
+  activityPrice?: number,
+  content: string,
+  isNew?: boolean,
+  index?: number,
+  category?: string[]
 }
 
-export type productList = productItem[]
+export type productListType = productType[]

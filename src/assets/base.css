@@ -36,6 +36,12 @@
   --section-gap: 160px;
 }
 
+/* z-index */
+:root {
+  --header-z-index: 99;
+  --popup-z-index: 999;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);

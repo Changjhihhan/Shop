@@ -32,7 +32,7 @@ const menuList = computed(() => {
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header>
+      <el-header class="hidden-xs-only header">
         <AppMenu :items="menuList" mode="horizontal"></AppMenu>
       </el-header>
       <el-main>
@@ -51,3 +51,12 @@ const menuList = computed(() => {
     </el-container>
   </div>
 </template> -->
+
+<style scoped>
+.header {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-background);
+  z-index: var(--header-z-index);
+}
+</style>
