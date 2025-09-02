@@ -1,34 +1,40 @@
 <script setup lang="ts">
-import AppMenu from "@/components/menu/AppMenu.vue";
-// import { computed } from "vue"
-// import { useRoute } from "vue-router"
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useCategoryStore } from "@/stores/category";
-import ProductItem from "@/components/product/ProductItem.vue";
 
-// const route = useRoute()
-// const productId = computed(() => route.params.productId)
+import AppMenu from "@/components/menu/AppMenu.vue";
+import ProductItem from "@/components/product/ProductItem.vue";
+import { useCategoryStore } from "@/stores/category";
+import { useProductsStore } from "@/stores/products";
+
+import type { productType } from "@/types";
+
+const route = useRoute();
+const router = useRouter();
 
 const categoryStore = useCategoryStore();
-const { categories, loaded } = storeToRefs(categoryStore);
-categoryStore.fetchCategories();
+const { categories, loaded: catLoaded } = storeToRefs(categoryStore);
+const categoryId = computed(() => route.params.categoryId as string);
 
-const productItem = {
-  name: "商品名稱",
-  id: "productId",
-  content: "商品內容",
-  price: 100,
-};
+const productsStore = useProductsStore();
+const { loaded: proLoaded } = storeToRefs(productsStore);
+const productByCategory = computed(() =>
+  productsStore.byCategory(categoryId.value)
+);
+
+function goDetailProduct(item: productType) {
+  router.push(`/product/detail/${item.id}`)
+}
 </script>
 
 <template>
   <el-row justify="space-around">
-    <el-col :span="4" class="hidden-xs-only" :resizable="false">
-      <AppMenu :items="categories" mode="vertical" />
-      <el-skeleton v-if="!loaded" :rows="4" animated style="margin-top: 8px" />
+    <el-col :span="5" class="hidden-xs-only" :resizable="false">
+      <AppMenu :items="categories" :loaded="catLoaded" mode="vertical" />
     </el-col>
 
-    <el-col :span="20">
+    <el-col :span="19">
       <el-row justify="start">
         <el-col
           :xs="12"
@@ -36,11 +42,11 @@ const productItem = {
           :md="6"
           :lg="4"
           :xl="2"
-          v-for="value in 30"
-          :key="value"
-          style="padding: 5px;"
+          v-for="product in productByCategory"
+          :key="product.id"
+          style="padding: 5px"
         >
-          <ProductItem :item="productItem"></ProductItem>
+          <ProductItem :item="product" :loaded="proLoaded" @click.self="goDetailProduct"></ProductItem>
         </el-col>
       </el-row>
     </el-col>

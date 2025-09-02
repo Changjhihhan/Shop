@@ -1,12 +1,20 @@
+export interface SKU {
+  readonly SKUid: string,
+  stock: number,
+  size?: string,
+  color?: string,
+}
+
 export interface productType {
-  id: string,
+  readonly id: string,
   name: string,
   price: number,
   activityPrice?: number,
   content: string,
   isNew?: boolean,
   index?: number,
-  category?: string[]
+  categoryIdList?: string[],
+  SKUs: SKU[],
 }
 
 export type productListType = productType[]

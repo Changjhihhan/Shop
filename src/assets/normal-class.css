@@ -5,3 +5,7 @@
 .inline { display: inline; }
 .contents { display: contents; }
 .hidden {display: none; }
+
+.primary-color {
+    color: var(--el-color-primary);
+}
