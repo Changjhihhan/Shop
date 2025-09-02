@@ -17,12 +17,12 @@ const router = createRouter({
     {
       path:'/product/list/:categoryId?',
       name: 'productList',
-      component: () => import('@/views/Product/ProductListView.vue')
+      component: () => import('@/views/product/ProductListView.vue')
     },
     {
       path:'/product/detail/:productId',
       name: 'productDetail',
-      component: () => import('@/views/Product/ProductDetailView.vue')
+      component: () => import('@/views/product/ProductDetailView.vue')
     },
   ],
 })
