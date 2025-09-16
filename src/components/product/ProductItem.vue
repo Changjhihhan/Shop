@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { productType } from "@/types";
 import { Picture as IconPicture } from "@element-plus/icons-vue";
+import { getImageUrl } from "@/utils/index";
 
 defineProps<{
   item: productType;
@@ -16,7 +17,7 @@ defineProps<{
   >
     <el-image
       class="product-img"
-      src="../../../public/product/product_1.png"
+      :src="getImageUrl(`product/${item.SKUs?.[0]?.imageName}.png`)"
       fit="contain"
       lazy
     >

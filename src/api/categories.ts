@@ -7,6 +7,7 @@ export async function getCategories() {
   const json = await fetchSheet(sheetId);
 
   const menuMap = new Map<string, MenuNode>();
+  const rootMap = new Map<string, MenuNode>();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   json.table.rows.slice(1).forEach((row: any) => {
@@ -17,32 +18,35 @@ export async function getCategories() {
 
     if (!category || !categoryId || !item || !itemId) return;
 
-    if (!menuMap.has(category)) {
-      menuMap.set(category, {
+    if (!rootMap.has(categoryId)) {
+      const node: MenuNode = {
         route: `/product/list/${categoryId}`,
         content: category,
         child: [
           {
             route: `/product/list/${categoryId}`,
-            content: "顯示全部",
+            content: '顯示全部',
           },
         ],
-      });
+      }
+      menuMap.set(category, node)
+      rootMap.set(categoryId, node)
     }
 
-    const parent = menuMap.get(category)!;
-    const childList = parent.child ?? [];
+    const parent = rootMap.get(categoryId)!;
 
-    // 避免重複
-    const exists = childList.some((node) => node.content === item);
+    const childList = parent.child ?? (parent.child = [])
+
+    const exists = childList.some((n) => n.content === item)
     if (!exists) {
-      childList.push({
+      const childNode: MenuNode = {
         route: `/product/list/${categoryId}${itemId}`,
         content: item,
-      });
-    }
+      }
+      childList.push(childNode)
 
-    parent.child = childList;
+      rootMap.set(`${categoryId}${itemId}`, childNode)
+    }
   });
 
   return Array.from(menuMap.values());
