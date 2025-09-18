@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import AppMenu from "./components/menu/AppMenu.vue";
 import { storeToRefs } from "pinia";
+// import { useUserInfoStore } from "@/stores/user";
 import { useCategoryStore } from "@/stores/category";
-import { computed } from "vue";
 import { useProductsStore } from "@/stores/products";
+import { computed } from "vue";
 
+const route = useRoute();
+
+// const userInfoStore = useUserInfoStore();
 const productsStore = useProductsStore();
 const categoryStore = useCategoryStore();
+// const { loginState } = storeToRefs(userInfoStore);
 const { categories, loaded } = storeToRefs(categoryStore);
 
 const menuList = computed(() => {
@@ -29,6 +34,10 @@ const menuList = computed(() => {
       ]
     : [];
 });
+const showHeader = computed(() => {
+  if(route.name == "login") return false;
+  return true;
+})
 
 const initApp = function () {
   categoryStore.fetchCategories();
@@ -41,7 +50,7 @@ initApp();
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header class="hidden-xs-only header">
+      <el-header class="hidden-xs-only header" v-show="showHeader">
         <AppMenu :items="menuList" mode="horizontal"></AppMenu>
       </el-header>
       <el-main>
@@ -51,15 +60,6 @@ initApp();
     </el-container>
   </div>
 </template>
-<!-- <template>
-  <div class="common-layout">
-    <el-container>
-      <el-header>Header</el-header>
-      <el-main>Main</el-main>
-      <el-footer>Footer</el-footer>
-    </el-container>
-  </div>
-</template> -->
 
 <style scoped>
 .header {
