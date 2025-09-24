@@ -1,5 +1,7 @@
+import { useRouter, useRoute } from "vue-router";
 import axios, { AxiosError } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import { ElMessage } from 'element-plus'
 
 // 建立 axios instance
 const api = axios.create({
@@ -19,19 +21,29 @@ api.interceptors.response.use(
     return response.data; // 直接回傳 JSON
   },
   async (error: AxiosError) => {
+    const route = useRoute();
+    const router = useRouter();
     if (error.response) {
       const status = error.response.status;
 
       if (status === 401) {
-        // token 過期 → 重新導向登入
-        console.warn("登入已過期，請重新登入");
-        localStorage.removeItem("authToken");
-        window.location.href = "/login";
+        ElMessage({
+          message: '登入已過期，請重新登入',
+          type: 'warning',
+        })
+        localStorage.removeItem("token");
+        localStorage.removeItem("profile");
+        if (route.meta.requiresAuth) {
+          router.push({
+            name: "login",
+            query: { redirect: route.fullPath }, // 登錄後回到原頁
+          });
+        }
       } else if (status >= 500) {
         console.error("伺服器異常，請稍後再試");
       }
-    } else if (error.request) {
-      console.error("網路不穩定，請檢查連線");
+    // } else if (error.request) {
+    //   console.error("網路不穩定，請檢查連線");
     } else {
       console.error("未知錯誤", error.message);
     }
@@ -47,11 +59,19 @@ export async function fetchFirebase<T = any>(
   config?: AxiosRequestConfig
 ): Promise<T> {
   try {
+    const token = localStorage.getItem("token");
     const response = await api.request<T>({
       method,
       url,
       ...(method === "get" ? { params: data } : { data }),
-      ...config,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        ...config?.headers,
+      },
+      // headers: {
+      //   Authorization: token ? `Bearer ${token}` : "",
+      //   ...config?.headers,
+      // },
     });
     return response as T;
   } catch (err) {

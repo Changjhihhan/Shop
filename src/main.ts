@@ -6,6 +6,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/theme-chalk/display.css'
 import './assets/main.css'
 import "@/firebase/firebase-config";
+import { useUserInfoStore } from "@/stores/user.ts";
 
 import App from './App.vue'
 import router from './router'
@@ -24,5 +25,8 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+
+const userStore = useUserInfoStore();
+userStore.restoreFromLocalStorage();
 
 app.mount('#app')

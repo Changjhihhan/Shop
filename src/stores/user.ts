@@ -8,6 +8,7 @@ import {
 } from "@/firebase/auth";
 import type { User } from "firebase/auth";
 import type { userInfoType } from "@/types";
+import { getUserInfo } from "@/api/userInfo";
 
 export const useUserInfoStore = defineStore("userInfo", () => {
   const loginState = ref(false); // 是否已登入
@@ -104,6 +105,15 @@ export const useUserInfoStore = defineStore("userInfo", () => {
     localStorage.removeItem("profile");
   }
 
+  async function restoreFromLocalStorage() {
+    const token = localStorage.getItem("token");
+    const profile = localStorage.getItem("profile");
+    if (token && profile) {
+      loginState.value = true;
+      await getUserInfo()
+    }
+  }
+
   return {
     loginState,
     user,
@@ -112,5 +122,6 @@ export const useUserInfoStore = defineStore("userInfo", () => {
     register,
     loginGoogle,
     signout,
+    restoreFromLocalStorage,
   };
 });

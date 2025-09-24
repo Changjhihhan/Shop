@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 
 import { UserFilled } from "@element-plus/icons-vue";
 import { ShoppingCart } from "@element-plus/icons-vue";
 
 import MenuBranch from "@/components/menu/MenuBranch.vue";
 import type { MenuNode } from "@/types";
+
+import { useUserInfoStore } from "@/stores/user";
 
 withDefaults(
   defineProps<{
@@ -24,14 +27,25 @@ withDefaults(
 const route = useRoute();
 const router = useRouter();
 
+const userStore = useUserInfoStore();
+const { loginState } = storeToRefs(userStore);
+
 const activePath = computed(() => route.path);
 
 const gotoVipmember = () => {
-  router.push("/vip/member")
-}
+  router.push("/vip/member");
+};
+const gotoLogin = () => {
+  router.push("/login");
+};
 const gotoShoppingCart = () => {
-  router.push("/shoppingCart")
-}
+  router.push("/shoppingCart");
+};
+const handleLogout = async () => {
+  await userStore.signout();
+  const nowPath = route.fullPath;
+  router.push(nowPath);
+};
 </script>
 
 <template>
@@ -42,11 +56,34 @@ const gotoShoppingCart = () => {
       :ellipsis="ellipsis"
       router
     >
-    
-    
-    <MenuBranch :items="items" />
-    <div class="icon" @click="gotoVipmember"><el-icon :size="20"><UserFilled /></el-icon></div>
-    <div class="icon" @click="gotoShoppingCart"><el-icon :size="20"><ShoppingCart /></el-icon></div>
+      <MenuBranch :items="items" />
+      <template v-if="mode === 'horizontal'">
+        <div class="icon">
+          <el-popover class="box-item" placement="bottom">
+            <template #reference>
+              <el-icon :size="20"><UserFilled /></el-icon>
+            </template>
+            <div class="icon-menu-item">
+              <el-button type="info" link bg @click="gotoVipmember"
+                >會員中心</el-button
+              >
+            </div>
+            <div class="icon-menu-item" v-show="!loginState">
+              <el-button type="info" link bg @click="gotoLogin"
+                >登錄/註冊</el-button
+              >
+            </div>
+            <div class="icon-menu-item" v-show="loginState">
+              <el-button type="info" link bg @click="handleLogout"
+                >登出</el-button
+              >
+            </div>
+          </el-popover>
+        </div>
+        <div class="icon" @click="gotoShoppingCart">
+          <el-icon :size="20"><ShoppingCart /></el-icon>
+        </div>
+      </template>
       <el-skeleton v-if="loaded" :rows="6" animated style="margin-top: 8px" />
     </el-menu>
   </el-scrollbar>
@@ -63,5 +100,8 @@ const gotoShoppingCart = () => {
   .el-icon {
     width: 100%;
   }
+}
+.icon-menu-item {
+  padding: 5px;
 }
 </style>
