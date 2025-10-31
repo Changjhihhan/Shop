@@ -6,7 +6,7 @@ export const useProductsStore = defineStore("products", {
   state: () => ({
     products: [] as productType[],
     loaded: false,
-    error: null as string | null,
+    errorMsg: null as string | null,
   }),
 
   getters: {
@@ -15,17 +15,21 @@ export const useProductsStore = defineStore("products", {
       return (category: string) =>
         state.products.filter((p) => p.categoryIdList?.includes(category));
     },
+    byProductId: (state) => {
+      return (id: string) => 
+        state.products.find((p) => p.id === id);
+    },
   },
 
   actions: {
     async fetchProducts() {
       this.loaded = true;
-      this.error = null;
+      this.errorMsg = null;
       try {
         this.products = await getProducts();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
-        this.error = e.message || "載入商品失敗";
+        this.errorMsg = e.message || "載入商品失敗";
       } finally {
         this.loaded = false;
       }

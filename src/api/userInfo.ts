@@ -1,10 +1,9 @@
 import { fetchFirebase } from "./_axios_firebase";
-import type { User } from "firebase/auth";
+import type { userInfoType } from "@/types";
 
 export async function getUserInfo() {
-  console.log("in getUserInfo")
   try {
-    const res = await fetchFirebase<User>("get", "/getUserInfo");
+    const res = await fetchFirebase<userInfoType>("get", "/getUserInfo");
     return res
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {

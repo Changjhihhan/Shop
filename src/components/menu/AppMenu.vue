@@ -61,7 +61,16 @@ const handleLogout = async () => {
         <div class="icon">
           <el-popover class="box-item" placement="bottom">
             <template #reference>
-              <el-icon :size="20"><UserFilled /></el-icon>
+              <el-icon
+                :size="20"
+                :class="{
+                  'primary-color active-icon': [
+                    '/vip/member',
+                    '/login',
+                  ].includes(activePath),
+                }"
+                ><UserFilled
+              /></el-icon>
             </template>
             <div class="icon-menu-item">
               <el-button type="info" link bg @click="gotoVipmember"
@@ -81,7 +90,11 @@ const handleLogout = async () => {
           </el-popover>
         </div>
         <div class="icon" @click="gotoShoppingCart">
-          <el-icon :size="20"><ShoppingCart /></el-icon>
+          <el-icon
+            :size="20"
+            :class="{ 'primary-color active-icon': activePath === '/shoppingCart' }"
+            ><ShoppingCart
+          /></el-icon>
         </div>
       </template>
       <el-skeleton v-if="loaded" :rows="6" animated style="margin-top: 8px" />
@@ -103,5 +116,8 @@ const handleLogout = async () => {
 }
 .icon-menu-item {
   padding: 5px;
+}
+.active-icon svg {
+  transform: scale(1.2);
 }
 </style>

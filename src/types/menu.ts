@@ -1,4 +1,4 @@
-export interface MenuNode {
+export type MenuNode = {
   route: string;
   content: string;
   style?: string;

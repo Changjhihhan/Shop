@@ -2,6 +2,7 @@ import { useRouter, useRoute } from "vue-router";
 import axios, { AxiosError } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import { ElMessage } from 'element-plus'
+import { useUserInfoStore } from "@/stores/user";
 
 // 建立 axios instance
 const api = axios.create({
@@ -33,6 +34,8 @@ api.interceptors.response.use(
         })
         localStorage.removeItem("token");
         localStorage.removeItem("profile");
+        const userStore = useUserInfoStore();
+        await userStore.signout();
         if (route.meta.requiresAuth) {
           router.push({
             name: "login",

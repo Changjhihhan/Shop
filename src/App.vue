@@ -2,17 +2,18 @@
 import { RouterView, useRoute } from "vue-router";
 import AppMenu from "./components/menu/AppMenu.vue";
 import { storeToRefs } from "pinia";
-// import { useUserInfoStore } from "@/stores/user";
+import { useUserInfoStore } from "@/stores/user";
 import { useCategoryStore } from "@/stores/category";
 import { useProductsStore } from "@/stores/products";
-import { computed } from "vue";
+import { useCartStore } from "./stores/cart";
+import { computed, watch } from "vue";
 
 const route = useRoute();
 
-// const userInfoStore = useUserInfoStore();
+const userStore = useUserInfoStore();
 const productsStore = useProductsStore();
 const categoryStore = useCategoryStore();
-// const { loginState } = storeToRefs(userInfoStore);
+const cartStore = useCartStore();
 const { categories, loaded } = storeToRefs(categoryStore);
 
 const menuList = computed(() => {
@@ -35,9 +36,21 @@ const menuList = computed(() => {
     : [];
 });
 const showHeader = computed(() => {
-  if(route.name == "login") return false;
+  if (route.name == "login") return false;
   return true;
-})
+});
+
+watch(
+  () => userStore.loginState,
+  (isLoggedIn) => {
+    if (isLoggedIn) {
+      cartStore.fetchCart();
+    } else {
+      cartStore.removeAllFromCart();
+    }
+  },
+  { immediate: true }
+);
 
 const initApp = function () {
   categoryStore.fetchCategories();
@@ -67,5 +80,6 @@ initApp();
   top: 0;
   background-color: var(--color-background);
   z-index: var(--header-z-index);
+  width: 100%;
 }
 </style>

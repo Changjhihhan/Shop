@@ -11,90 +11,49 @@ import type { userInfoType } from "@/types";
 import { getUserInfo } from "@/api/userInfo";
 
 export const useUserInfoStore = defineStore("userInfo", () => {
-  const loginState = ref(false); // 是否已登入
-  const user = ref<User | null>(null); // 使用者資訊
-  const errorMsg = ref(""); // 錯誤訊息
+  const loginState = ref(false);
+  const user = ref<userInfoType | null>(null);
+  const errorMsg = ref("");
 
-  async function login(email: string, password: string) {
+  /** 
+   * 共用的登入後流程：儲存 token、拉取使用者資料、同步購物車
+   */
+  async function handleLoginSuccess(userAuth: User) {
+    const token = await userAuth.getIdToken();
+    localStorage.setItem("token", token);
+
+    await getUserData();
+
+    errorMsg.value = "";
+    loginState.value = true;
+  }
+
+  /**
+   * 共用的登入流程（封裝 error 處理）
+   */
+  async function handleAuthAction(action: () => Promise<{ user: User }>) {
     try {
-      const res = await loginWithEmail(email, password);
-      user.value = res.user;
-      loginState.value = true;
-      errorMsg.value = "";
-
-      const token = await res.user.getIdToken();
-
-      const profile: userInfoType = {
-        uid: user.value.uid,
-        email: user.value.email,
-        displayName: user.value.displayName,
-        photoURL: user.value.photoURL,
-      };
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("profile", JSON.stringify(profile));
-
+      const res = await action();
+      await handleLoginSuccess(res.user);
       return true;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      errorMsg.value = err.message;
+      errorMsg.value = err.message || "登入失敗";
       loginState.value = false;
       return false;
     }
+  }
+
+  async function login(email: string, password: string) {
+    return await handleAuthAction(() => loginWithEmail(email, password));
   }
 
   async function register(email: string, password: string) {
-    try {
-      const res = await registerWithEmail(email, password);
-      user.value = res.user;
-      loginState.value = true;
-      errorMsg.value = "";
-
-      const token = await res.user.getIdToken();
-
-      const profile: userInfoType = {
-        uid: user.value.uid,
-        email: user.value.email,
-        displayName: user.value.displayName,
-        photoURL: user.value.photoURL,
-      };
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("profile", JSON.stringify(profile));
-
-      return true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      errorMsg.value = err.message;
-      loginState.value = false;
-      return false;
-    }
+    return await handleAuthAction(() => registerWithEmail(email, password));
   }
 
   async function loginGoogle() {
-    try {
-      const res = await loginWithGoogle();
-      user.value = res.user;
-      loginState.value = true;
-      errorMsg.value = "";
-
-      const token = await res.user.getIdToken();
-      const profile: userInfoType = {
-        uid: user.value.uid,
-        email: user.value.email,
-        displayName: user.value.displayName,
-        photoURL: user.value.photoURL,
-      };
-      localStorage.setItem("token", token);
-      localStorage.setItem("profile", JSON.stringify(profile));
-      return true;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      errorMsg.value = err.message;
-      loginState.value = false;
-      return false;
-    }
+    return await handleAuthAction(loginWithGoogle);
   }
 
   async function signout() {
@@ -105,13 +64,13 @@ export const useUserInfoStore = defineStore("userInfo", () => {
     localStorage.removeItem("profile");
   }
 
-  async function restoreFromLocalStorage() {
+  async function getUserData() {
     const token = localStorage.getItem("token");
-    const profile = localStorage.getItem("profile");
-    if (token && profile) {
-      loginState.value = true;
-      await getUserInfo()
-    }
+    if (!token) return;
+
+    loginState.value = true;
+    const res = await getUserInfo();
+    if (res) user.value = res;
   }
 
   return {
@@ -122,6 +81,6 @@ export const useUserInfoStore = defineStore("userInfo", () => {
     register,
     loginGoogle,
     signout,
-    restoreFromLocalStorage,
+    getUserData,
   };
 });

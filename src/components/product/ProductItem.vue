@@ -17,7 +17,7 @@ defineProps<{
   >
     <el-image
       class="product-img"
-      :src="getImageUrl(`product/${item.SKUs?.[0]?.imageName}.png`)"
+      :src="getImageUrl('product', item.SKUs?.[0]?.imageName)"
       fit="contain"
       lazy
     >

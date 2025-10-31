@@ -1,4 +1,4 @@
-export interface SKUtype {
+export type SKUtype = {
   SKUid: string,
   color: string,
   imageName: string,
@@ -9,7 +9,7 @@ export interface SKUtype {
   stock: number,
 }
 
-export interface productType {
+export type productType = {
   readonly id: string,
   name: string,
   price: number,

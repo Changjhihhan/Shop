@@ -27,6 +27,6 @@ app.use(router)
 app.use(ElementPlus)
 
 const userStore = useUserInfoStore();
-userStore.restoreFromLocalStorage();
+userStore.getUserData();
 
 app.mount('#app')
