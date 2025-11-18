@@ -74,12 +74,17 @@ initApp();
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .header {
   position: sticky;
   top: 0;
   background-color: var(--color-background);
   z-index: var(--header-z-index);
   width: 100%;
+}
+.el-main {
+    @media only screen and (max-width: 767px) {
+      padding: 0;
+  }
 }
 </style>

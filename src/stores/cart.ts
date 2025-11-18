@@ -6,43 +6,43 @@ import { fetchCart as getCartFromServer, saveCart as setCartFromServer } from "@
 
 export const useCartStore = defineStore("cart", {
   state: () => ({
-    cartsData: [] as cartType[],
+    cartsDataList: [] as cartType[],
     loaded: false,
     errorMsg: null as string | null,
   }),
 
   actions: {
     addFromCart(data: cartType): boolean {
-      const index = this.cartsData.findIndex((c) => c.SKUid === data.SKUid);
+      const index = this.cartsDataList.findIndex((c) => c.SKUid === data.SKUid);
       if (index !== -1) {
-        const afterQty = this.cartsData[index].buyQty + data.buyQty;
+        const afterQty = this.cartsDataList[index].buyQty + data.buyQty;
 
         // 超過庫存就返回 false
-        if (afterQty > this.cartsData[index].stock) {
+        if (afterQty > this.cartsDataList[index].stock) {
           this.errorMsg = "超過庫存數量";
           return false;
         }
-        this.cartsData[index].buyQty = afterQty;
+        this.cartsDataList[index].buyQty = afterQty;
       } else {
         // 新增商品
         if (data.buyQty > data.stock) {
           this.errorMsg = "超過庫存數量";
           return false;
         }
-        this.cartsData.push(data);
+        this.cartsDataList.push(data);
       }
 
       this.errorMsg = "";
       return true;
     },
     removeAllFromCart() {
-      this.cartsData = [];
+      this.cartsDataList = [];
     },
     async fetchCart() {
       this.loaded = true;
       try {
         const data = await getCartFromServer();
-        this.cartsData = data || [];
+        this.cartsDataList = data || [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         this.errorMsg = err.message;
@@ -61,7 +61,7 @@ export const useCartStore = defineStore("cart", {
       }
 
       try {
-        const cartToSave = newCartData ?? this.cartsData;
+        const cartToSave = newCartData ?? this.cartsDataList;
 
         if (!cartToSave.length) {
           this.errorMsg = "購物車是空的";
@@ -86,13 +86,13 @@ export const useCartStore = defineStore("cart", {
       }
     },
     async addAndSyncCart(data: cartType): Promise<boolean> {
-      const previousCart = JSON.parse(JSON.stringify(this.cartsData))
+      const previousCart = JSON.parse(JSON.stringify(this.cartsDataList))
       const added = this.addFromCart(data);
       if (!added) return false;
       const pushed = await this.saveCart();
       if (!pushed) {
         console.warn("購物車更新至雲端失敗，回滾本地狀態");
-        this.cartsData = previousCart;
+        this.cartsDataList = previousCart;
         return false;
       }
       return true;
