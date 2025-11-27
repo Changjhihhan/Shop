@@ -1,3 +1,7 @@
+## 🔗 Live Demo
+
+[![Live Demo](https://img.shields.io/badge/Vercel-Live%20Demo-black?logo=vercel)](https://shop-indol-delta-80.vercel.app/)
+
 # Shop
 
 This template should help get you started developing with Vue 3 in Vite.
